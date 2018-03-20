@@ -16,6 +16,16 @@ h2,p {
   font-size: 34px;
 }
 
+.mg-tp-xs {
+  margin-top: 10px;
+}
+.mg-tp-sm {
+  margin-top: 20px;
+}
+.mg-bt-md {
+  margin-bottom: 30px;
+}
+
 .border {
   display: inline-block;
   border: 3px solid #513BCC;
@@ -26,10 +36,34 @@ h2,p {
 /* Clock Component */
 .App-clock {
   background-color: #EFFFE4;
-  margin: 40px 0 30px;
+  margin: 20px 0 40px;
 }
 
 /* Weather Component */
 .App-weather p {
+  margin-bottom: 0px;
+}
+.weather-modules {  
+  padding: 0;
+}
+.weather-modules .border {
+  padding: 10px 12px;
+}
+.weather-modules li {
+  margin-right: 10px;
+}
+.weather-modules li:last-child {
+  margin-right: 0px;
+}
+.weather-modules p.day {
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 6px;
   margin-bottom: 10px;
+  font-style: italic;
+}
+.weather-modules p.weather {
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+  margin-bottom: 6px;
+  font-size: 12px;
 }
