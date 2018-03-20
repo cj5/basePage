@@ -23,9 +23,9 @@ class Clock extends Component {
   } 
   render() {
     return (
-      <p className="App-clock ft-sz-xl">
+      <p className="App-clock border ft-sz-xl">
         {this.state.time}
-      </p>
+      </p>      
     )
   }
 }

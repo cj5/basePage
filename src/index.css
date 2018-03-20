@@ -5,10 +5,31 @@ body {
   color: #513BCC;
   text-align: center;
 }
+h2,p {
+  margin: 0;
+}
 
 .ft-sz-xl {
   font-size: 42px;
 }
 .ft-sz-lg {
   font-size: 34px;
+}
+
+.border {
+  display: inline-block;
+  border: 3px solid #513BCC;
+  border-radius: 2px;
+  padding: 10px 20px;
+}
+
+/* Clock Component */
+.App-clock {
+  background-color: #EFFFE4;
+  margin: 40px 0 30px;
+}
+
+/* Weather Component */
+.App-weather p {
+  margin-bottom: 10px;
 }

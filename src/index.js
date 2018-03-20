@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import Clock from './components/Clock'
+import Weather from './components/Weather'
 // import './App.css';
 import registerServiceWorker from './registerServiceWorker';
 
@@ -10,7 +11,8 @@ class App extends Component {
     return (
       <div>
         <h1>BasePage</h1>
-        <Clock ></Clock>
+        <Clock></Clock>
+        <Weather></Weather>
       </div>
     );
   }
