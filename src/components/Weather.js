@@ -82,8 +82,8 @@ class Weather extends Component {
           let months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']         
           let month = months[a.getMonth()]
           let date = a.getDate()
-          let hour = a.getHours()
-          let min = a.getMinutes() < 10 ? '0' + a.getMinutes() : a.getMinutes()
+          // let hour = a.getHours()
+          // let min = a.getMinutes() < 10 ? '0' + a.getMinutes() : a.getMinutes()
           return month + ' ' + date
           //  + ', ' + hour + ':' + min
         }
@@ -120,6 +120,7 @@ class Weather extends Component {
           today_temps.push(today_data[i].main.temp)
         }
         const today_maxTemp = Math.round((9 / 5) * (Math.max(...today_temps) - 273) + 32) + '°F'
+        console.log('ARRAY LENGTH', today_maxTemp.length)
         console.log('today MAX temp:', today_maxTemp)
         const today_minTemp = Math.round((9 / 5) * (Math.min(...today_temps) - 273) + 32) + '°F'
         console.log('today MIN temp:', today_minTemp)
@@ -215,7 +216,7 @@ class Weather extends Component {
     let location = this.state.location
     let weather = this.state.weather
 
-    let todayday = this.state.today_day
+    // let todayday = this.state.today_day
     let todayweather = this.state.today_weather
     let todayminTemp = this.state.today_minTemp
     let todaymaxTemp = this.state.today_maxTemp
@@ -237,18 +238,18 @@ class Weather extends Component {
     let day4maxTemp = this.state.day4_maxTemp
     return (
       <div className="App-weather">
-        <p>Current temperature in {location}:</p>
-        <div className="border mg-tp-sm mg-bt-md">
+        <p>Current weather in <b>{location}</b>:</p>
+        <div className="border mg-tp-xs mg-bt-md">
           <h2>{temperature}</h2>
           <p>{weather}</p>
         </div>
-        <p>5 day forecast for {location}:</p>
-        <ul className="weather-modules">
-          <li className="border"><p className="day">{todayday}</p><p className="weather">{todayweather}</p><p>min: {todayminTemp}</p><p>max: {todaymaxTemp}</p></li>
-          <li className="border"><p className="day">{day1day}</p><p className="weather">{day1weather}</p><p>min: {day1minTemp}</p><p>max: {day1maxTemp}</p></li>
-          <li className="border"><p className="day">{day2day}</p><p className="weather">{day2weather}</p><p>min: {day2minTemp}</p><p>max: {day2maxTemp}</p></li>
-          <li className="border"><p className="day">{day3day}</p><p className="weather">{day3weather}</p><p>min: {day3minTemp}</p><p>max: {day3maxTemp}</p></li>
-          <li className="border"><p className="day">{day4day}</p><p className="weather">{day4weather}</p><p>min: {day4minTemp}</p><p>max: {day4maxTemp}</p></li>
+        <p>5 day forecast for <b>{location}</b>:</p>
+        <ul className="weather-modules mg-tp-xs">
+          <li className="border"><p className="day">Today</p><p className="weather">{todayweather}</p><p>lo: {todayminTemp}</p><p>hi: {todaymaxTemp}</p></li>
+          <li className="border"><p className="day">{day1day}</p><p className="weather">{day1weather}</p><p>lo: {day1minTemp}</p><p>hi: {day1maxTemp}</p></li>
+          <li className="border"><p className="day">{day2day}</p><p className="weather">{day2weather}</p><p>lo: {day2minTemp}</p><p>hi: {day2maxTemp}</p></li>
+          <li className="border"><p className="day">{day3day}</p><p className="weather">{day3weather}</p><p>lo: {day3minTemp}</p><p>hi: {day3maxTemp}</p></li>
+          <li className="border"><p className="day">{day4day}</p><p className="weather">{day4weather}</p><p>lo: {day4minTemp}</p><p>hi: {day4maxTemp}</p></li>
         </ul>
       </div>      
     )
