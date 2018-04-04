@@ -34,7 +34,7 @@ h2,p {
   display: inline-block;
   border: 3px solid #513BCC;
   border-radius: 3px;
-  padding: 6px 20px;
+  padding: 6px 20px;  
   /* box-shadow: 2px 2px 10px rgba(81,59,204,0.3); */
   /* background-color: rgba(81,59,204,0.07); */
 }
@@ -45,15 +45,24 @@ h2,p {
 }
 .clock {
   /* background-color: #EFFFE4; */
-  margin: 10px 0 40px;
+  margin: 10px 0 10px;
 }
 
 /* Weather Component */
+.weather-section {
+  display: inline-block;
+  margin: 0 auto;
+  padding: 0 40px 20px;
+  margin-top: 20px;
+  /* border-radius: 3px; */
+  /* border-top: 2px solid #513BCC; */
+  /* background: rgba(81,59,204,0.075); */
+}
 .App-weather p {
   margin-bottom: 0px;
 }
 .App-weather .border {
-  padding: 8px 16px 12px;
+  padding: 8px 16px 12px;  
 }
 .weather-modules {  
   padding: 0;
