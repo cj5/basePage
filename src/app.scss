@@ -15,11 +15,24 @@ h1,h2,h3,h4,h5,h6 {
   width: 100vw;
   height: 100vh;
   font-family: 'Source Code Pro', monospace;
+  background-color: #000;
 }
 a {
   text-decoration: none;
-  &:hover {
-    text-decoration: underline;
+  position: relative;
+  display: inline-block;
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: transparent;
+    transition: 0.1s all ease-in-out;
+  }
+  &:hover:after {
+    background-color: $text-gray;
   }
 }
 p {
@@ -67,13 +80,15 @@ img {
 .time {
   font-size: 110px;
   border-bottom: 2px solid #eee;
+  width: max-content;
 }
 .date {
   font-size: 40px;
   margin: 12px 0 0;
 }
 
-.weather {
+.weather,
+.weather-error {
   position: absolute;
   top: $py;
   right: $px;
@@ -98,21 +113,16 @@ img {
     padding-bottom: 20px;
     border-bottom: 1px solid #fff;
   }
+  .city {
+    font-style: italic;
+  }
 }
 
 .copyright {
   position: absolute;
   bottom: $py;
   left: $px;
-  ul {
-    display: flex;
-  }
-  li {
-    padding: 0 10px;
-    &:first-of-type {
-      padding-left: 0;
-    }
-  }
+  margin-bottom: 0;
 }
 
 .label,

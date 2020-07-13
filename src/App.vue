@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div class="img-wrap">
+    <div class="img-wrap" v-if="imgSrc">
       <img :src="imgSrc" :alt="imgAlt">
       <div class="filter"></div>
     </div>
@@ -9,27 +9,27 @@
         <p class="time">{{ time }}</p>
         <p class="date">{{ date }}</p>
       </div>
-      <div class="weather">
+      <div class="weather" v-if="temp">
         <div class="main-weather">
-          <img :src="icon" alt="" class="weather-icon">
+          <img :src="icon" alt="" class="weather-icon" v-if="icon">
           <p class="temp">{{ temp }}</p>
         </div>
-        <p class="description">{{ description }}</p>
+        <p class="description">
+          {{ description }}
+          <span class="city label">| {{ city }}</span>
+        </p>
         <p><span class="label">Feels like:</span> {{ feelsTemp }}</p>
         <p><span class="label">Hi:</span> {{ hiTemp }}</p>
         <p><span class="label">Lo:</span> {{ loTemp }}</p>
         <p class="humidity"><span class="label">Humidity:</span> {{ humidity }}</p>
       </div>
-      <div class="copyright">
-        <ul>
-          <li><a :href="photoUrl" target="_blank">Photo</a></li>
-          /
-          <li><a :href="authorUrl" target="_blank">{{ authorName }}</a></li>
-          /
-          <li><a href="https://unsplash.com" target="_blank">Unsplash</a></li>
-        </ul>
-      </div>
-      <p v-if="photoLocation" class="location">{{ photoLocation }}</p>
+      <p class="weather-error label" v-else>{{ weatherError }}</p>
+      <p class="copyright" v-if="imgSrc">
+        <a :href="photoUrl + utmParams" target="_blank">Photo</a> / 
+        <a :href="authorUrl + utmParams" target="_blank">{{ authorName }}</a> / 
+        <a :href="`https://unsplash.com${utmParams}`" target="_blank">Unsplash</a>
+      </p>
+      <p class="location" v-if="photoLocation">{{ photoLocation }}</p>
     </div>
   </div>
 </template>
@@ -51,6 +51,7 @@ export default {
       photoLocation: null,
       time: null,
       date: null,
+      city: null,
       temp: null,
       hiTemp: null,
       loTemp: null,
@@ -58,22 +59,25 @@ export default {
       description: null,
       icon: null,
       humidity: null,
+      weatherError: null,
+      utmParams: '?utm_source=basepage&utm_medium=referral'
     }
   },
   methods: {
     getDate() {
       this.time = moment().format('h:mm A')
-      this.date = `${moment().format('dddd, MMMM D')}`
+      this.date = moment().format('dddd, MMMM D')
     },
     kToF(k) {
       return Math.round(k * (9/5) - 459.67)
     }
   },
   mounted() {
-    axios.get(`https://api.unsplash.com/photos/random/?client_id=${env.ACCESS_KEY}&orientation=landscape`)
+    // UNSPLASH IMAGES
+    axios.get(`https://api.unsplash.com/photos/random/?client_id=${env.ACCESS_KEY}&orientation=landscape&query=wallpapers`)
       .then(response => {
         const photo = response.data
-        console.log(photo)
+        console.log('UNSPLASH:', photo)
 
         this.imgSrc = photo.urls.regular
         this.imgAlt = photo.alt_description
@@ -82,13 +86,16 @@ export default {
         this.authorName = photo.user.name
         this.photoLocation = photo.location.name
       })
+      .catch(error => {
+        console.log('UNSPLASH API ERROR:', error.response.data)
+      })
 
-    if('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        let lat = position.coords.latitude
-        let lon = position.coords.longitude
+    navigator.geolocation.getCurrentPosition((position) => {
+      let lat = position.coords.latitude
+      let lon = position.coords.longitude
 
-        axios.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${env.WEATHER_KEY}`)
+      // "ONE CALL" WEATHER DATA
+      axios.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${env.WEATHER_KEY}`)
         .then(response => {
           console.log('WEATHER:', response)
 
@@ -103,10 +110,24 @@ export default {
           this.icon = `https://openweathermap.org/img/wn/${current.weather[0].icon}@2x.png`
           this.humidity = `${current.humidity}%`
         })
-      });
-    } else {
-      console.log('location access is not supported')
-    }
+        .catch(error => {
+          console.log('WEATHER API ERROR:', error.response.data)
+        })
+
+      // CURRENT WEATHER DATA
+      axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${env.WEATHER_KEY}`)
+        .then(response => {
+          this.city = response.data.name
+        })
+        .catch(error => {
+          console.log('WEATHER API ERROR:', error.response.data)
+        })
+
+    });
+
+    setTimeout(() => {
+      this.weatherError = 'Allow your browser to access your location in order to get weather data.'
+    }, 2000)
 
     setInterval(this.getDate, 1000)
   }
