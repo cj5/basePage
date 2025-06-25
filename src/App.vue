@@ -22,6 +22,8 @@
       <p><span class="label">Lo:</span> {{ loTemp }}</p>
       <p class="humidity"><span class="label">Humidity:</span> {{ humidity }}</p>
       <p class="wind"><span class="label">Wind:</span> {{ wind }}</p>
+      <p class="sunrise"><span class="label">Sunrise:</span> {{ sunrise }}</p>
+      <p class="sunset"><span class="label">Sunset:</span> {{ sunset }}</p>
     </div>
     <p class="weather-error label" v-else>{{ weatherError }}</p>
     <p class="copyright" v-if="imgSrc">
@@ -56,6 +58,8 @@ const description = ref(null);
 const icon = ref(null);
 const humidity = ref(null);
 const wind = ref(null);
+const sunrise = ref(null);
+const sunset = ref(null);
 const weatherError = ref(null);
 const utmParams = '?utm_source=basepage&utm_medium=referral';
 
@@ -109,7 +113,8 @@ onMounted(() => {
         icon.value = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
         humidity.value = `${data.main.humidity}%`;
         wind.value = `${metersSecToMilesHour(data.wind.speed)} mph`;
-
+        sunrise.value = `${dayjs.unix(data.sys.sunrise).format('h:mm A')}`;
+        sunset.value = `${dayjs.unix(data.sys.sunset).format('h:mm A')}`;
         city.value = response.data.name;
       })
       .catch(error => {
