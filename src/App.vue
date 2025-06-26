@@ -3,11 +3,14 @@
     <img :src="imgSrc" :alt="imgAlt">
     <div class="filter"></div>
   </div>
+
   <div class="content">
     <div class="time-date">
       <p class="time">{{ time }}</p>
       <p class="date">{{ date }}</p>
     </div>
+
+    <!-- <div class="weather" v-if="temp && !showSpinner"> -->
     <div class="weather" v-if="temp">
       <div class="main-weather">
         <img :src="icon" alt="" class="weather-icon" v-if="icon">
@@ -24,13 +27,21 @@
       <p class="wind"><span class="label">Wind:</span> {{ wind }}</p>
       <p class="sunrise"><span class="label">Sunrise:</span> {{ sunrise }}</p>
       <p class="sunset"><span class="label">Sunset:</span> {{ sunset }}</p>
+      <p class="last-updated"><span class="label">Last updated:</span> {{ lastUpdated }}</p>
     </div>
-    <p class="weather-error label" v-else>{{ weatherError }}</p>
+
+    <!-- <div v-if="showSpinner" class="spinner-wrap" ref="spinnerWrapEl">
+      <p>Loading weather...</p>
+    </div> -->
+
+    <p class="weather-error label" v-if="weatherError">{{ weatherError }}</p>
+
     <p class="copyright" v-if="imgSrc">
       <a :href="photoUrl + utmParams" target="_blank">Photo</a> /
       <a :href="authorUrl + utmParams" target="_blank">{{ authorName }}</a> /
       <a :href="`https://unsplash.com${utmParams}`" target="_blank">Unsplash</a>
     </p>
+
     <p class="location" v-if="photoLocation">{{ photoLocation }}</p>
   </div>
 </template>
@@ -40,6 +51,8 @@ import { env } from '../env';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import dayjs from 'dayjs';
+// import { Spinner } from 'spin.js';
+// import 'spin.js/spin.css';
 
 const imgSrc = ref(null);
 const imgAlt = ref(null);
@@ -60,7 +73,10 @@ const humidity = ref(null);
 const wind = ref(null);
 const sunrise = ref(null);
 const sunset = ref(null);
+const lastUpdated = ref(null);
 const weatherError = ref(null);
+// const spinnerWrapEl = ref(null);
+// const showSpinner = ref(true);
 const utmParams = '?utm_source=basepage&utm_medium=referral';
 
 function getDate() {
@@ -91,40 +107,62 @@ onMounted(() => {
       photoLocation.value = photo.location.name;
     })
     .catch(error => {
-      console.log('UNSPLASH API ERROR:', error.response.data);
+      console.error('UNSPLASH API ERROR:', error);
     })
 
-  navigator.geolocation.getCurrentPosition((position) => {
-    let lat = position.coords.latitude;
-    let lon = position.coords.longitude;
+  function getWeatherData() {
+    navigator.geolocation.getCurrentPosition((position) => {
+      let lat = position.coords.latitude;
+      let lon = position.coords.longitude;
 
-    // CURRENT WEATHER DATA
-    axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${env.WEATHER_KEY}`)
-      .then(response => {
-        console.log('OpenWeather:', response.data, null, 2);
+      // showSpinner.value = true;
 
-        const data = response.data;
+      // CURRENT WEATHER DATA
+      axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${env.WEATHER_KEY}`)
+        .then(response => {
+          weatherError.value = '';
+          console.log('OpenWeather:', response.data, null, 2);
 
-        temp.value = `${kToF(data.main.temp)}°`;
-        feelsTemp.value = `${kToF(data.main.feels_like)}°`;
-        hiTemp.value = `${kToF(data.main.temp_max)}°`;
-        loTemp.value = `${kToF(data.main.temp_min)}°`;
-        description.value = data.weather[0].description;
-        icon.value = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
-        humidity.value = `${data.main.humidity}%`;
-        wind.value = `${metersSecToMilesHour(data.wind.speed)} mph`;
-        sunrise.value = `${dayjs.unix(data.sys.sunrise).format('h:mm A')}`;
-        sunset.value = `${dayjs.unix(data.sys.sunset).format('h:mm A')}`;
-        city.value = response.data.name;
-      })
-      .catch(error => {
-        console.error('WEATHER API ERROR:', error.response.data);
-      })
-  });
+          const data = response.data;
 
-  setTimeout(() => {
-    weatherError.value = 'Allow your browser to access your location in order to get weather data.';
-  }, 2000);
+          temp.value = `${kToF(data.main.temp)}°`;
+          feelsTemp.value = `${kToF(data.main.feels_like)}°`;
+          hiTemp.value = `${kToF(data.main.temp_max)}°`;
+          loTemp.value = `${kToF(data.main.temp_min)}°`;
+          description.value = data.weather[0].description;
+          icon.value = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+          humidity.value = `${data.main.humidity}%`;
+          wind.value = `${metersSecToMilesHour(data.wind.speed)} mph`;
+          sunrise.value = `${dayjs.unix(data.sys.sunrise).format('h:mm A')}`;
+          sunset.value = `${dayjs.unix(data.sys.sunset).format('h:mm A')}`;
+          city.value = response.data.name;
+          lastUpdated.value = dayjs().format('h:mm:ss A');
+
+          // showSpinner.value = false;
+        })
+        .catch(error => {
+          // showSpinner.value = false;
+          weatherError.value = 'There was an error getting weather data.';
+          console.error('WEATHER API ERROR:', error);
+        })
+    }, error => {
+      weatherError.value = 'Allow your browser to access your location in order to get weather data.';
+      console.error('GEOLOCATION ERROR:', error);
+    });
+  }
+
+  // const spinner = new Spinner({
+  //   lines: 10,
+  //   color: '#fff',
+  //   animation: 'spinner-line-fade-more',
+  // });
+  // spinner.spin(spinnerWrapEl.value);
+
+  getWeatherData();
+
+  setInterval(() => {
+    getWeatherData();
+  }, 30000); // 30 sec
 
   setInterval(getDate, 1000);
 }); // onMounted()
@@ -272,4 +310,25 @@ img {
   bottom: $py;
   margin: 0;
 }
+
+.last-updated {
+  margin-top: 30px;
+  color: $text-gray;
+  font-style: italic;
+}
+.last-updated,
+.last-updated * {
+  font-size: 12px;
+}
+
+// .spinner-wrap {
+//   position: absolute;
+//   top: 0;
+//   right: 16px;
+//   p {
+//     font-style: italic;
+//     margin-top: 90px;
+//     color: $text-gray;
+//   }
+// }
 </style>
